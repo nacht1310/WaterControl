@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:uitest/screen/account/account.dart';
 import 'package:uitest/screen/login/login.dart';
+import 'package:uitest/screen/login_notification.dart';
 import 'package:uitest/server/repositories/login_repositories.dart';
 import 'package:uitest/server/repositories/station_repositories.dart';
 import 'package:uitest/state_management/bloc/login_bloc.dart';
@@ -47,6 +49,21 @@ class UiTest extends StatefulWidget {
 }
 
 class _UiTestState extends State<UiTest> {
+  @override
+  void initState() {
+    super.initState();
+    LoginNotification.init();
+  }
+
+  void listenNotification() =>
+      LoginNotification.onNotification.stream.listen(onClickedNotification);
+
+  void onClickedNotification(String? payload) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => Account(name: payload)),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uitest/constant.dart';
+import 'package:uitest/screen/account/account.dart';
 import 'package:uitest/screen/history/history.dart';
 import 'package:uitest/screen/home/home.dart';
 import 'package:uitest/screen/login/login.dart';
@@ -146,7 +147,14 @@ class BuildDrawer extends StatelessWidget {
                                     style: TextStyle(
                                         fontSize: 20, color: Colors.black),
                                   ),
-                                  onTap: () {},
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => Account(
+                                              name: stations.toString())),
+                                    );
+                                  },
                                 ),
                               ),
                             ],

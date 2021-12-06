@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uitest/constant.dart';
+import 'package:uitest/screen/account/account.dart';
 import 'package:uitest/screen/details/details.dart';
 import 'package:uitest/state_management/bloc/login_bloc.dart';
 import 'package:uitest/state_management/events/station_events.dart';
 import 'package:uitest/state_management/states/login_states.dart';
+import '../login_notification.dart';
 import 'circle_percentage.dart';
 import 'package:uitest/screen/drawer.dart';
 import 'package:uitest/screen/headings.dart';
@@ -17,11 +19,25 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void onClickedNotification(String? payload) {
+      Navigator.of(context).push(
+        MaterialPageRoute(builder: (context) => Account(name: payload)),
+      );
+    }
+
+    void listenNotification() =>
+        LoginNotification.onNotification.stream.listen(onClickedNotification);
+
     return BlocConsumer<LoginBloc, LoginState>(
       listener: (context, state) async {
         if (state is LoginSuccess) {
           SharedPreferences pref = await SharedPreferences.getInstance();
           await pref.setString("login", state.loginResponse.token);
+          LoginNotification.showNotifications(
+              payload: "Welcome to Account Screen",
+              title: "Login Safety",
+              body: "Let's verify your account and setting your phone number.");
+          listenNotification();
           BlocProvider.of<StationBloc>(context)
               .add(const StationEventRequested());
         }

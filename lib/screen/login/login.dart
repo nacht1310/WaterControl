@@ -13,6 +13,7 @@ class Login extends StatelessWidget {
   final GlobalKey<FormState> _fromstate = GlobalKey<FormState>();
 
   Login({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -69,10 +70,16 @@ class Login extends StatelessWidget {
                               borderRadius: BorderRadius.circular(15)),
                           child: TextFormField(
                             controller: userNameController,
-                            validator: (input) => input!.length < 6 ||
-                                    input.isEmpty
-                                ? "Username should have more than 6 characters"
-                                : null,
+                            validator: (input) {
+                              if (input!.length < 6 || input.isEmpty) {
+                                return "Username should have more than 6 characters";
+                              } else if (!RegExp(r'^[a-z A-Z 0-9 _ . @]+$')
+                                  .hasMatch(input)) {
+                                return "There are special word in your typing";
+                              } else {
+                                return null;
+                              }
+                            },
                             decoration: const InputDecoration(
                               contentPadding: EdgeInsets.all(10),
                             ),
