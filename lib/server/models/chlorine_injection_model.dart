@@ -18,7 +18,7 @@ class ChlorineInjection extends Equatable {
   factory ChlorineInjection.fromJson(Map<String, dynamic> json) {
     return ChlorineInjection(
       chlorineInjectionId: json['chlorineInjectionId'],
-      chlorineVolume: json['chlorineVolume'],
+      chlorineVolume: json['amountOfChlorine'],
       employeeName: json['employeeName'],
       injectionTime: json['injectionTime'],
       processingSystemId: json['processingSystemId'],
