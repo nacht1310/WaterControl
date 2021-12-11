@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uitest/constant.dart';
 import 'package:uitest/screen/home/home.dart';
@@ -151,7 +150,7 @@ class Login extends StatelessWidget {
 
                               Navigator.of(context).pushAndRemoveUntil(
                                   MaterialPageRoute(
-                                      builder: (context) => const Home()),
+                                      builder: (context) => Home()),
                                   (route) => false);
                             },
                           ),

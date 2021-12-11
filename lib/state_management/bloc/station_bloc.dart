@@ -13,14 +13,14 @@ class StationBloc extends Bloc<StationEvent, StationState> {
     if (stationEvent is StationEventRequested) {
       try {
         List<Station> stations = await stationRepositories.getStationData();
-        yield StationSuccess(station: stations);
+        yield StationSuccess(station: stations, timestamp: DateTime.now());
       } catch (exception) {
         yield StationFailure();
       }
     } else if (stationEvent is StationEventRefresh) {
       try {
         List<Station> stations = await stationRepositories.getStationData();
-        yield StationSuccess(station: stations);
+        yield StationSuccess(station: stations, timestamp: DateTime.now());
       } catch (exception) {
         yield StationFailure();
       }

@@ -14,14 +14,17 @@ import 'package:uitest/state_management/bloc/station_bloc.dart';
 import 'package:uitest/state_management/states/station_states.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// ignore: must_be_immutable
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  Home({Key? key}) : super(key: key);
+  List<DateTime> scheduledTime = [];
+  int id = 0;
 
   @override
   Widget build(BuildContext context) {
     void onClickedNotification(String? payload) {
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => Account(name: payload)),
+        MaterialPageRoute(builder: (context) => Account()),
       );
     }
 
@@ -33,17 +36,12 @@ class Home extends StatelessWidget {
         if (state is LoginSuccess) {
           SharedPreferences pref = await SharedPreferences.getInstance();
           await pref.setString("login", state.loginResponse.token);
-          LoginNotification.showNotifications(
-              payload: "Welcome to Account Screen",
-              title: "Login Safety",
-              body: "Let's verify your account and setting your phone number.");
-          listenNotification();
           BlocProvider.of<StationBloc>(context)
               .add(const StationEventRequested());
         }
       },
-      builder: (context, state) {
-        if (state is LoginSuccess) {
+      builder: (context, loginState) {
+        if (loginState is LoginSuccess) {
           return Scaffold(
             appBar: AppBar(
               title: const Text("Home"),
@@ -52,45 +50,68 @@ class Home extends StatelessWidget {
             body: BlocConsumer<StationBloc, StationState>(
               listener: (context, state) {
                 if (state is StationSuccess) {
-                  stations = [];
                   stations = state.station;
                   completer.complete();
                 }
               },
-              builder: (context, state) {
-                if (state is StationSuccess) {
+              builder: (context, stationState) {
+                if (stationState is StationSuccess) {
+                  if (emailContainer.isEmpty) {
+                    if (DateTime.now().hour > 7 && DateTime.now().hour < 22) {
+                      scheduledTime.add(DateTime.now());
+                      for (int i = 1; i < 10; i++) {
+                        scheduledTime.add(scheduledTime[i - 1]
+                            .add(const Duration(seconds: 10)));
+                        id++;
+                        LoginNotification.showScheduledNotifications(
+                            id: id,
+                            payload: "Move to Account Screen",
+                            title: "Login Safety",
+                            body:
+                                "Let's verify your account and setting your email.",
+                            scheduleTime: scheduledTime[i]);
+                      }
+
+                      // if (scheduledTime.isBefore(DateTime.now())) {
+                      //   scheduledTime.add(const Duration(minutes: 1));
+                      //   id++;
+                      // }
+                    }
+                  } else {
+                    LoginNotification.cancelAllNotifications();
+                  }
+                  listenNotification();
                   return RefreshIndicator(
-                    onRefresh: () {
+                    onRefresh: () async {
                       BlocProvider.of<StationBloc>(context)
                           .add(const StationEventRefresh());
                       return completer.future;
                     },
                     child: ListView.builder(
-                        itemCount: stations.length,
-                        itemBuilder: (context, index) {
-                          return Column(
-                            children: [
-                              TabBlock(
-                                  index,
-                                  stations[index]
-                                      .processingSystem[0]
-                                      .waterLevel,
-                                  waterPercentage(stations[index]
-                                      .processingSystem[0]
-                                      .waterLevel),
-                                  stations[index]
-                                      .processingSystem[0]
-                                      .chlorineConcentration,
-                                  chlorinePercentage(stations[index]
-                                      .processingSystem[0]
-                                      .chlorineConcentration),
-                                  stations[index].stationName),
-                            ],
-                          );
-                        }),
+                      itemCount: stations.length,
+                      itemBuilder: (context, index) {
+                        return Column(
+                          children: [
+                            TabBlock(
+                                index,
+                                stations[index].processingSystem[0].waterLevel,
+                                waterPercentage(stations[index]
+                                    .processingSystem[0]
+                                    .waterLevel),
+                                stations[index]
+                                    .processingSystem[0]
+                                    .chlorineConcentration,
+                                chlorinePercentage(stations[index]
+                                    .processingSystem[0]
+                                    .chlorineConcentration),
+                                stations[index].stationName),
+                          ],
+                        );
+                      },
+                    ),
                   );
                 }
-                if (state is StationFailure) {
+                if (stationState is StationFailure || stations.isEmpty) {
                   return const Center(
                     child: Text("Something went wrong"),
                   );
@@ -102,7 +123,7 @@ class Home extends StatelessWidget {
             ),
           );
         }
-        if (state is LoginFailure) {
+        if (loginState is LoginFailure) {
           return const Center(
             child: Text("Your User Name or Password is incorrect"),
           );

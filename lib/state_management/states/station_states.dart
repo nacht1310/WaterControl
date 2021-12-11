@@ -11,9 +11,10 @@ class StationInitial extends StationState {}
 
 class StationSuccess extends StationState {
   final List<Station> station;
-  const StationSuccess({required this.station});
+  final DateTime timestamp;
+  const StationSuccess({required this.station, required this.timestamp});
   @override
-  List<Object?> get props => [station];
+  List<Object?> get props => [station, timestamp];
 }
 
 class StationFailure extends StationState {}

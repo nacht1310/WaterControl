@@ -80,7 +80,7 @@ class BuildDrawer extends StatelessWidget {
                                                 },
                                                 builder: (context, state) {
                                                   if (state is StationSuccess) {
-                                                    return const Home();
+                                                    return Home();
                                                   }
                                                   if (state is StationFailure) {
                                                     return const Center(
@@ -151,8 +151,7 @@ class BuildDrawer extends StatelessWidget {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => Account(
-                                              name: stations.toString())),
+                                          builder: (context) => Account()),
                                     );
                                   },
                                 ),
